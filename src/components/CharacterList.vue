@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div align=left>
   <ol>
     <li v-for="character in characters" v-bind:key="character">
-      {{ character.name }}
+      {{ character.name }} the {{ character.character_role }}
     </li>
   </ol>
   </div>
