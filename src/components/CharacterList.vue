@@ -1,5 +1,5 @@
 <template>
-  <div align=left>
+  <div class=CharacterList>
   <ol>
     <li v-for="character in characters" v-bind:key="character.id" :id="character.id" @click="NameClicked">
       {{ character.name }} the {{ character.character_role }}

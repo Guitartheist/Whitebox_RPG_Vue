@@ -2,8 +2,8 @@
   <div id="app">
     <table align=center>
     <tr>
-     <td width=50%><CharacterList @CharacterListClicked="CharacterChange"/></td>
-     <td width=50%><CharacterDetail v-bind:selected_character="character_detail"></CharacterDetail></td>
+     <td><CharacterList @CharacterListClicked="CharacterChange"/></td>
+     <td><CharacterDetail v-bind:selected_character="character_detail"></CharacterDetail></td>
     </tr>
     </table>
   </div>
