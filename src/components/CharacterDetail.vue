@@ -1,7 +1,7 @@
 <template>
-  <div v-if="selected_character"  class=CharacterDetail>
-      <h1>{{ selected_character.name }} the {{ selected_character.character_role }}</h1>
-      <table>
+  <div class=CharacterDetail v-if="show_detail">
+      <h1 v-if="selected_character">{{ selected_character.name }} the {{ selected_character.character_role }}</h1>
+      <table v-if="selected_character">
       <tr><td>Strength</td><td class=CharacterStatistic><b>{{ selected_character.strength }}</b></td></tr>
       <tr><td>Dexterity</td><td class=CharacterStatistic><b>{{ selected_character.dexterity }}</b></td></tr>
       <tr><td>Constitution</td><td class=CharacterStatistic><b>{{ selected_character.constitution }}</b></td></tr>
@@ -24,8 +24,10 @@ export default {
     }
   },
 
-  props:
-  { selected_character : Object},
+  props: {
+    selected_character : Object,
+    show_detail : Boolean
+  },
 
   created() {
   }
