@@ -1,5 +1,5 @@
 <template>
-  <div v-if="show_create" class=CharacterCreate border=1>
+  <div v-if="show_create=='create'" class=CharacterCreate border=1>
       <h1>Generate a new character</h1>
       <label>Name: </label>
       <input type=text v-model="name">
@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { HTTP } from './http-common';
 
 export default {
   data() {
@@ -19,7 +19,7 @@ export default {
   },
 
   props: {
-    show_create : Boolean
+    show_create : String
   },
 
   created() {
@@ -27,7 +27,7 @@ export default {
 
   methods: {
     Generate(event) {
-        axios.get(`http://127.0.0.1:8000/whitebox/character_generate/` + this.name + '/')
+        HTTP.get(`character_generate/` + this.name + '/')
         .then(response => {
           // JSON responses are automatically parsed.
           event = response.data;

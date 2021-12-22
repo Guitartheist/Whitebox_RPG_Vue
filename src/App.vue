@@ -2,13 +2,23 @@
   <div id="app">
     <table align=center>
     <tr>
-        <td colspan=2><Navigation @NavClicked="NavigationClicked"/></td>
+        <td colspan=2><Navigation @NavClicked="NavigationClicked"
+        v-bind:username="username"
+        v-bind:update="update_navigation"/></td>
     </tr>
     <tr>
-     <td><CharacterList @CharacterListClicked="CharacterChange"/></td>
      <td>
-        <CharacterCreate @Generate="CreateClicked" v-bind:show_create="show_create"/>
-        <CharacterDetail v-bind:selected_character="character_detail" v-bind:show_detail="show_detail"></CharacterDetail>
+         <CharacterList @CharacterListClicked="CharacterChange"
+          v-bind:url="character_list_url"
+          v-bind:show_list="show_left"
+          v-bind:update="update_character_list"
+          ref="character_list"/>
+     </td>
+     <td>
+        <CharacterCreate @Generate="CreateClicked" v-bind:show_create="show_right"/>
+        <CharacterDetail v-bind:selected_character="character_detail" v-bind:show_detail="show_right"></CharacterDetail>
+        <Login v-bind:show_login="show_right" @UserLogon="UserLogon"/>
+        <Register v-bind:show_register="show_right" @UserRegistered="UserRegistered"/>
     </td>
     </tr>
     </table>
@@ -20,7 +30,9 @@ import CharacterList from './components/CharacterList.vue';
 import CharacterDetail from './components/CharacterDetail.vue';
 import CharacterCreate from './components/CharacterCreate.vue';
 import Navigation from './components/Navigation.vue';
-import axios from 'axios';
+import Login from './components/Login.vue';
+import Register from './components/Register.vue';
+import { HTTP } from './components/http-common';
 
 export default {
   name: 'App',
@@ -28,22 +40,39 @@ export default {
     CharacterList,
     CharacterDetail,
     CharacterCreate,
-    Navigation
+    Navigation,
+    Login,
+    Register
   },
   data() {
     return {
         character_detail: '',
-        show_detail: true,
-        show_create: false,
+        show_left: 'character_list',
+        show_right: 'detail',
+        character_list_url: 'character_list',
+        username: '',
+        update_character_list: false,
+        update_navigation: false
     }
+  },
+  created () {
+    HTTP.get('get_username')
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.username = response.data.username;
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
   },
   methods: {
         CharacterChange(event) {
                 this.fetch_id = event.target.id;
-                axios.get(`http://127.0.0.1:8000/whitebox/characters/` + this.fetch_id + '/')
+                HTTP.get(`characters/` + this.fetch_id + '/')
             .then(response => {
               // JSON responses are automatically parsed.
               this.character_detail = response.data;
+              this.show_right = 'detail';
             })
             .catch(e => {
               this.errors.push(e)
@@ -52,19 +81,59 @@ export default {
         NavigationClicked(event) {
             switch(event.target.id) {
                 case 'view_characters':
-                    this.show_detail = true;
-                    this.show_create = false;
+                    this.character_list_url = 'character_list';
+                    this.show_left = 'character_list';
+                    this.show_right = 'detail';
                     break;
                 case 'create_character':
-                    this.show_detail = false;
-                    this.show_create = true;
+                    this.show_right = 'create';
+                    break;
+                case 'my_characters':
+                    this.character_list_url = 'my_character_list';
+                    this.show_left = 'character_list';
+                    this.show_right = 'detail';
+                    break;
+                case 'register':
+                    this.show_right = 'register';
+                    break;
+                case 'login':
+                    this.show_right = 'login';
+                    break;
+                case 'logout':
+                    this.show_right = 'login';
+                        HTTP.get('LogoutPage')
+                        .then()
+                        .catch(e => {
+                          this.errors.push(e)
+                        });
+                    this.UserChange();
+                    this.update_navigation = true;
                     break;
             }
         },
         CreateClicked(event) {
             this.character_detail = event;
-            this.show_detail = true;
-            this.show_create = false;
+            this.show_left = 'character_list';
+            this.show_right = 'detail';
+            this.update_character_list = true;
+        },
+        UserChange() {
+            HTTP.get('get_username')
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.username = response.data.username;
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+        },
+        UserRegistered() {
+            this.show_right = 'login';
+        },
+        UserLogon() {
+            this.show_right = 'detail';
+            this.UserChange();
+            this.update_navigation = true;
         }
   }
 }
