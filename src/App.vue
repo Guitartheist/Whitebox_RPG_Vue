@@ -3,7 +3,6 @@
     <table align=center>
     <tr>
         <td colspan=2><Navigation @NavClicked="NavigationClicked"
-        v-bind:username="username"
         v-bind:update="update_navigation"/></td>
     </tr>
     <tr>
@@ -16,7 +15,17 @@
      </td>
      <td>
         <CharacterCreate @Generate="CreateClicked" v-bind:show_create="show_right"/>
-        <CharacterDetail v-bind:selected_character="character_detail" v-bind:show_detail="show_right"></CharacterDetail>
+        <CharacterDetail
+            v-bind:selected_character="character_detail"
+            v-bind:show_detail="show_right"
+            @DeleteClicked="DeleteClicked"
+            @FinalizeClicked="FinalizeClicked"
+        />
+        <FinalizeCharacter
+            v-bind:selected_character="character_detail"
+            v-bind:show_finalize="show_right"
+            @CharacterFinalized="CharacterChange"
+        />
         <Login v-bind:show_login="show_right" @UserLogon="UserLogon"/>
         <Register v-bind:show_register="show_right" @UserRegistered="UserRegistered"/>
     </td>
@@ -28,6 +37,7 @@
 <script>
 import CharacterList from './components/CharacterList.vue';
 import CharacterDetail from './components/CharacterDetail.vue';
+import FinalizeCharacter from './components/FinalizeCharacter.vue';
 import CharacterCreate from './components/CharacterCreate.vue';
 import Navigation from './components/Navigation.vue';
 import Login from './components/Login.vue';
@@ -39,6 +49,7 @@ export default {
   components: {
     CharacterList,
     CharacterDetail,
+    FinalizeCharacter,
     CharacterCreate,
     Navigation,
     Login,
@@ -50,7 +61,6 @@ export default {
         show_left: 'character_list',
         show_right: 'detail',
         character_list_url: 'character_list',
-        username: '',
         update_character_list: false,
         update_navigation: false
     }
@@ -101,15 +111,14 @@ export default {
                     break;
                 case 'logout':
                     this.show_right = 'login';
-                        HTTP.get('LogoutPage')
+                     HTTP.get('LogoutPage')
                         .then()
                         .catch(e => {
                           this.errors.push(e)
                         });
-                    this.UserChange();
-                    this.update_navigation = true;
                     break;
             }
+            this.update_navigation = true;
         },
         CreateClicked(event) {
             this.character_detail = event;
@@ -117,22 +126,27 @@ export default {
             this.show_right = 'detail';
             this.update_character_list = true;
         },
-        UserChange() {
-            HTTP.get('get_username')
+        FinalizeClicked() {
+            this.show_right = 'finalize';
+        },
+        async DeleteClicked() {
+            await HTTP.delete(`characters/` + this.fetch_id + '/')
             .then(response => {
               // JSON responses are automatically parsed.
-              this.username = response.data.username;
+              this.character_detail = response.data;
+              this.show_right = 'detail';
             })
             .catch(e => {
               this.errors.push(e)
             })
+            this.update_character_list = true;
+            this.show_right = 'create';
         },
         UserRegistered() {
             this.show_right = 'login';
         },
         UserLogon() {
             this.show_right = 'detail';
-            this.UserChange();
             this.update_navigation = true;
         }
   }

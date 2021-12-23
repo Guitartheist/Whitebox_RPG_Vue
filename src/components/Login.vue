@@ -29,8 +29,8 @@ export default {
   },
 
   methods: {
-    Login() {
-        HTTP.post('signin',
+    async Login() {
+        await HTTP.post('signin',
         {
             username: this.username,
             password: this.password
