@@ -14,18 +14,16 @@
 </template>
 
 <script>
-import { HTTP } from './http-common';
 
 export default {
   data() {
     return {
-      username: '',
       errors: []
     }
   },
 
   props: {
-    update : Boolean
+    username: String
   },
 
   // Fetches character list when the component is created.
@@ -34,27 +32,8 @@ export default {
   },
 
   methods: {
-    UserChange() {
-            HTTP.get('get_username')
-            .then(response => {
-              // JSON responses are automatically parsed.
-              this.username = response.data.username;
-            })
-            .catch(e => {
-              this.errors.push(e)
-            })
-        },
     NavClicked(event) {
         this.$emit('NavClicked', event);
-    }
-  },
-
-  watch: {
-    update (val, oldVal) {
-        if (val!=oldVal && val==true) {
-            this.update = false;
-            this.UserChange();
-        }
     }
   }
 }

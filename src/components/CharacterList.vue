@@ -39,7 +39,7 @@ export default {
 
   methods: {
     NameClicked(event) {
-        this.$emit('CharacterListClicked', event);
+        this.$emit('CharacterListClicked', event.target.id);
     },
     UpdateList() {
         HTTP.get(this.url)

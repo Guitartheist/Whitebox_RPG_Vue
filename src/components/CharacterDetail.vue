@@ -12,8 +12,12 @@
       <tr><td>Silver</td><td class=CharacterStatistic><b>{{ selected_character.silver }}</b></td></tr>
       <tr><td>Copper</td><td class=CharacterStatistic><b>{{ selected_character.copper }}</b></td></tr>
       </table>
-      <h2 v-if="selected_character" @click="DeleteClicked"> Delete </h2>
-      <h2 v-if="selected_character" @click="FinalizeClicked"> Finalize </h2>
+      <h2 v-if="selected_character && selected_character.username==username"
+            @click="DeleteClicked">
+       Delete </h2>
+      <h2 v-if="selected_character && selected_character.finalized==false && selected_character.username==username"
+            @click="FinalizeClicked">
+        Finalize </h2>
   </div>
 </template>
 
@@ -28,7 +32,8 @@ export default {
 
   props: {
     selected_character : Object,
-    show_detail : String
+    show_detail : String,
+    username: String
   },
 
   created() {

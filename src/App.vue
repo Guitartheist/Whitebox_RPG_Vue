@@ -3,7 +3,7 @@
     <table align=center>
     <tr>
         <td colspan=2><Navigation @NavClicked="NavigationClicked"
-        v-bind:update="update_navigation"/></td>
+        v-bind:username="username"/></td>
     </tr>
     <tr>
      <td>
@@ -18,12 +18,14 @@
         <CharacterDetail
             v-bind:selected_character="character_detail"
             v-bind:show_detail="show_right"
+            v-bind:username="username"
             @DeleteClicked="DeleteClicked"
             @FinalizeClicked="FinalizeClicked"
         />
         <FinalizeCharacter
             v-bind:selected_character="character_detail"
             v-bind:show_finalize="show_right"
+            v-bind:username="username"
             @CharacterFinalized="CharacterChange"
         />
         <Login v-bind:show_login="show_right" @UserLogon="UserLogon"/>
@@ -62,7 +64,7 @@ export default {
         show_right: 'detail',
         character_list_url: 'character_list',
         update_character_list: false,
-        update_navigation: false
+        username: ''
     }
   },
   created () {
@@ -76,9 +78,9 @@ export default {
             })
   },
   methods: {
-        CharacterChange(event) {
-                this.fetch_id = event.target.id;
-                HTTP.get(`characters/` + this.fetch_id + '/')
+        async CharacterChange(id) {
+                this.fetch_id = id;
+                await HTTP.get(`characters/` + this.fetch_id + '/')
             .then(response => {
               // JSON responses are automatically parsed.
               this.character_detail = response.data;
@@ -87,8 +89,9 @@ export default {
             .catch(e => {
               this.errors.push(e)
             })
+            this.show_right = 'detail';
         },
-        NavigationClicked(event) {
+        async NavigationClicked(event) {
             switch(event.target.id) {
                 case 'view_characters':
                     this.character_list_url = 'character_list';
@@ -111,14 +114,14 @@ export default {
                     break;
                 case 'logout':
                     this.show_right = 'login';
-                     HTTP.get('LogoutPage')
+                    await HTTP.get('LogoutPage')
                         .then()
                         .catch(e => {
                           this.errors.push(e)
                         });
+                    this.UserChange();
                     break;
             }
-            this.update_navigation = true;
         },
         CreateClicked(event) {
             this.character_detail = event;
@@ -128,6 +131,16 @@ export default {
         },
         FinalizeClicked() {
             this.show_right = 'finalize';
+        },
+        UserChange() {
+            HTTP.get('get_username')
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.username = response.data.username;
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
         },
         async DeleteClicked() {
             await HTTP.delete(`characters/` + this.fetch_id + '/')
@@ -147,7 +160,7 @@ export default {
         },
         UserLogon() {
             this.show_right = 'detail';
-            this.update_navigation = true;
+            this.UserChange();
         }
   }
 }

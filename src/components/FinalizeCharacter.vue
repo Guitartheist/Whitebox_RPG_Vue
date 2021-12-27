@@ -1,7 +1,7 @@
 <template>
   <div class=CharacterDetail v-if="show_finalize=='finalize'">
       <h1 v-if="selected_character">{{ selected_character.name }} the {{ selected_character.character_role }}</h1>
-      <select v-model="c_role">
+      <select v-model="c_role" @change="NewCoreValue">
             <option value=0>Fighter (Strength)</option>
             <option value=1>Mage (Intelligence)</option>
             <option value=2>Thief (Dexterity)</option>
@@ -15,7 +15,9 @@
       <DumpStat v-bind:stat_name="w" v-bind:original_value="selected_character.wisdom" v-bind:dump_value="dump_w" v-bind:new_value="new_w" @Plus="Plus" @Minus="Minus"/>
       <DumpStat v-bind:stat_name="ch" v-bind:original_value="selected_character.charisma" v-bind:dump_value="dump_ch" v-bind:new_value="new_ch" @Plus="Plus" @Minus="Minus"/>
       </table>
-      <input type=submit value=Finalize @click="Finalize">
+      <h2 v-if="selected_character && selected_character.finalized==false && selected_character.username==username"
+            @click="Finalize">
+        Finalize {{ selected_character.name }} as a {{ character_role }} </h2>
   </div>
 </template>
 
@@ -48,13 +50,15 @@ export default {
         new_w: 0,
         new_ch: 0,
         c_role: 0,
+        character_role: 'Fighter',
       errors: []
     }
   },
 
   props: {
     selected_character : Object,
-    show_finalize : String
+    show_finalize : String,
+    username: String
   },
 
   computed: {
@@ -137,22 +141,26 @@ export default {
     },
     NewCoreValue() {
         switch (this.c_role) {
-            case 0:
+            case '0':
                 this.new_s = this.selected_character.strength + this.DumpTotal - this.dump_s;
+                this.character_role = 'Fighter';
                 break;
-            case 1:
+            case '1':
                 this.new_i = this.selected_character.intelligence +  this.DumpTotal - this.dump_i;
+                this.character_role = 'Mage';
                 break;
-            case 2:
+            case '2':
                 this.new_d = this.selected_character.dexterity + this.DumpTotal - this.dump_d;
+                this.character_role = 'Thief';
                 break;
-            case 3:
-                this.new_w = this.selected_character.wisdom - this.dump_w;
+            case '3':
+                this.new_w = this.selected_character.wisdom + this.DumpTotal - this.dump_w;
+                this.character_role = 'Cleric';
                 break;
         }
     },
-    Finalize() {
-        HTTP.put('characters/'+this.selected_character.id+'/',
+    async Finalize() {
+        await HTTP.put('characters/'+this.selected_character.id+'/',
         {
             c_role: this.c_role,
             strength: this.dump_s,
@@ -167,6 +175,42 @@ export default {
         })
         this.$emit('CharacterFinalized',this.selected_character.id);
     }
+  },
+  watch: {
+        selected_character() {
+            this.new_s = this.selected_character.strength;
+            this.new_d = this.selected_character.dexterity;
+            this.new_co = this.selected_character.constitution;
+            this.new_i = this.selected_character.intelligence;
+            this.new_w = this.selected_character.wisdom;
+            this.new_ch = this.selected_character.charisma;
+            this.dump_s = 0;
+            this.dump_d = 0;
+            this.dump_co = 0;
+            this.dump_i = 0;
+            this.dump_w = 0;
+            this.dump_ch = 0;
+            this.c_role = 0;
+            this.character_role = 'Fighter';
+            if (this.selected_character.intelligence > this.selected_character.strength
+             && this.selected_character.intelligence > this.selected_character.dexterity
+             && this.selected_character.intelligence > this.selected_character.wisdom) {
+                this.c_role = 1;
+                this.character_role = 'Mage';
+            }
+            if (this.selected_character.dexterity > this.selected_character.strength
+             && this.selected_character.dexterity > this.selected_character.intelligence
+             && this.selected_character.dexterity > this.selected_character.wisdom) {
+                this.c_role = 2;
+                this.character_role = 'Thief';
+            }
+            if (this.selected_character.wisdom > this.selected_character.strength
+             && this.selected_character.wisdom > this.selected_character.dexterity
+             && this.selected_character.wisdom > this.selected_character.intelligence) {
+                this.c_role = 3;
+                this.character_role = 'Cleric';
+            }
+        }
   }
 }
 </script>
