@@ -8,6 +8,8 @@
     <tr>
      <td>
          <CharacterList @CharacterListClicked="CharacterChange"
+         @CharacterListPageNext="CharacterListPageNext"
+         @CharacterListPagePrevious="CharacterListPagePrevious"
           v-bind:show_list="show_left"
           v-bind:characters="characters"
           />
@@ -25,7 +27,7 @@
             v-bind:selected_character="character_detail"
             v-bind:show_finalize="show_right"
             v-bind:username="username"
-            @CharacterFinalized="CharacterChange"
+            @CharacterFinalized="CharacterFinalized"
         />
         <Login v-bind:show_login="show_right" @UserLogon="UserLogon"/>
         <Register v-bind:show_register="show_right" @UserRegistered="UserRegistered"/>
@@ -62,8 +64,9 @@ export default {
         character_detail: '',
         show_left: 'character_list',
         show_right: 'detail',
-        character_list_url: 'character_list',
-        username: ''
+        character_list_url: 'CharacterList',
+        username: '',
+        list_page: 1
     }
   },
   created () {
@@ -84,10 +87,15 @@ export default {
             })
             this.show_right = 'detail';
         },
+        CharacterFinalized(id) {
+            this.CharacterChange(id);
+            this.UpdateList();
+        },
         async NavigationClicked(event) {
             switch(event.target.id) {
                 case 'view_characters':
-                    this.character_list_url = 'character_list';
+                    this.list_page = 1;
+                    this.character_list_url = 'CharacterList';
                     this.UpdateList();
                     this.show_left = 'character_list';
                     this.show_right = 'detail';
@@ -96,7 +104,8 @@ export default {
                     this.show_right = 'create';
                     break;
                 case 'my_characters':
-                    this.character_list_url = 'my_character_list';
+                    this.list_page = 1;
+                    this.character_list_url = 'MyCharacterList';
                     this.show_left = 'character_list';
                     this.UpdateList();
                     this.show_right = 'detail';
@@ -118,6 +127,28 @@ export default {
                     break;
             }
         },
+        CharacterListPageNext(url) {
+            this.list_page += 1;
+            HTTP({ url: url, baseURL: '' })
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.characters = response.data
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+        },
+        CharacterListPagePrevious(url) {
+            this.list_page -= 1;
+            HTTP({ url: url, baseURL: '' })
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.characters = response.data
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+        },
         CreateClicked(event) {
             this.character_detail = event;
             this.show_left = 'character_list';
@@ -138,7 +169,7 @@ export default {
             })
         },
         UpdateList() {
-            HTTP.get(this.character_list_url)
+            HTTP.get(this.character_list_url + "?page=" + this.list_page)
             .then(response => {
               // JSON responses are automatically parsed.
               this.characters = response.data

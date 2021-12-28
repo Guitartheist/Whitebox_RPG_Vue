@@ -1,7 +1,7 @@
 <template>
   <div class=CharacterDetail v-if="show_finalize=='finalize'">
       <h1 v-if="selected_character">{{ selected_character.name }} the {{ selected_character.character_role }}</h1>
-      <select v-model="c_role" @change="NewCoreValue">
+      <select v-model="c_role" @change="ResetNewValues">
             <option value=0>Fighter (Strength)</option>
             <option value=1>Mage (Intelligence)</option>
             <option value=2>Thief (Dexterity)</option>
@@ -159,6 +159,21 @@ export default {
                 break;
         }
     },
+    ResetNewValues() {
+        this.new_s = this.selected_character.strength;
+        this.new_d = this.selected_character.dexterity;
+        this.new_co = this.selected_character.constitution;
+        this.new_i = this.selected_character.intelligence;
+        this.new_w = this.selected_character.wisdom;
+        this.new_ch = this.selected_character.charisma;
+        this.dump_s = 0;
+        this.dump_d = 0;
+        this.dump_co = 0;
+        this.dump_i = 0;
+        this.dump_w = 0;
+        this.dump_ch = 0;
+        this.NewCoreValue();
+    },
     async Finalize() {
         await HTTP.put('characters/'+this.selected_character.id+'/',
         {
@@ -178,18 +193,7 @@ export default {
   },
   watch: {
         selected_character() {
-            this.new_s = this.selected_character.strength;
-            this.new_d = this.selected_character.dexterity;
-            this.new_co = this.selected_character.constitution;
-            this.new_i = this.selected_character.intelligence;
-            this.new_w = this.selected_character.wisdom;
-            this.new_ch = this.selected_character.charisma;
-            this.dump_s = 0;
-            this.dump_d = 0;
-            this.dump_co = 0;
-            this.dump_i = 0;
-            this.dump_w = 0;
-            this.dump_ch = 0;
+            this.ResetNewValues();
             this.c_role = 0;
             this.character_role = 'Fighter';
             if (this.selected_character.intelligence > this.selected_character.strength

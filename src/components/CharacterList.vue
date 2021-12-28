@@ -1,10 +1,12 @@
 <template>
   <div class=CharacterList v-if="show_list=='character_list'">
   <ol>
-    <li v-for="character in characters" v-bind:key="character.id" :id="character.id" @click="NameClicked">
+    <li v-for="character in characters.results" v-bind:key="character.id" :id="character.id" @click="NameClicked">
       {{ character.name }} the {{ character.character_role }}
     </li>
   </ol>
+  <h3 @click="Next" class=Navigation align=center v-if="characters.next">Next</h3>
+  <h3 @click="Previous" class=Navigation align=center v-if="characters.previous">Previous</h3>
   </div>
 </template>
 
@@ -29,6 +31,12 @@ export default {
   methods: {
     NameClicked(event) {
         this.$emit('CharacterListClicked', event.target.id);
+    },
+    Next() {
+        this.$emit('CharacterListPageNext', this.characters.next);
+    },
+    Previous() {
+        this.$emit('CharacterListPagePrevious', this.characters.previous);
     }
   }
 }

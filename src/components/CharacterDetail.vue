@@ -1,5 +1,6 @@
 <template>
   <div class=CharacterDetail v-if="show_detail=='detail'">
+      <h1 v-if="!selected_character">Character Details</h1>
       <h1 v-if="selected_character">{{ selected_character.name }} the {{ selected_character.character_role }}</h1>
       <table v-if="selected_character">
       <tr><td>Strength</td><td class=CharacterStatistic><b>{{ selected_character.strength }}</b></td></tr>
