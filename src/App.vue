@@ -8,10 +8,9 @@
     <tr>
      <td>
          <CharacterList @CharacterListClicked="CharacterChange"
-          v-bind:url="character_list_url"
           v-bind:show_list="show_left"
-          v-bind:update="update_character_list"
-          ref="character_list"/>
+          v-bind:characters="characters"
+          />
      </td>
      <td>
         <CharacterCreate @Generate="CreateClicked" v-bind:show_create="show_right"/>
@@ -59,23 +58,17 @@ export default {
   },
   data() {
     return {
+        characters: [],
         character_detail: '',
         show_left: 'character_list',
         show_right: 'detail',
         character_list_url: 'character_list',
-        update_character_list: false,
         username: ''
     }
   },
   created () {
-    HTTP.get('get_username')
-            .then(response => {
-              // JSON responses are automatically parsed.
-              this.username = response.data.username;
-            })
-            .catch(e => {
-              this.errors.push(e)
-            })
+    this.UserChange();
+    this.UpdateList();
   },
   methods: {
         async CharacterChange(id) {
@@ -95,6 +88,7 @@ export default {
             switch(event.target.id) {
                 case 'view_characters':
                     this.character_list_url = 'character_list';
+                    this.UpdateList();
                     this.show_left = 'character_list';
                     this.show_right = 'detail';
                     break;
@@ -104,6 +98,7 @@ export default {
                 case 'my_characters':
                     this.character_list_url = 'my_character_list';
                     this.show_left = 'character_list';
+                    this.UpdateList();
                     this.show_right = 'detail';
                     break;
                 case 'register':
@@ -127,7 +122,7 @@ export default {
             this.character_detail = event;
             this.show_left = 'character_list';
             this.show_right = 'detail';
-            this.update_character_list = true;
+            this.UpdateList();
         },
         FinalizeClicked() {
             this.show_right = 'finalize';
@@ -137,6 +132,16 @@ export default {
             .then(response => {
               // JSON responses are automatically parsed.
               this.username = response.data.username;
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+        },
+        UpdateList() {
+            HTTP.get(this.character_list_url)
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.characters = response.data
             })
             .catch(e => {
               this.errors.push(e)
@@ -152,7 +157,7 @@ export default {
             .catch(e => {
               this.errors.push(e)
             })
-            this.update_character_list = true;
+            this.UpdateList();
             this.show_right = 'create';
         },
         UserRegistered() {

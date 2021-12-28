@@ -1,5 +1,6 @@
 <template>
   <div class=RegisterVue v-if="show_register=='register'">
+  <h1>Register</h1>
   <table>
     <tr><td>Email</td><td align=right><input type=text v-model="email"></td></tr>
    <tr><td>Username</td><td align=right><input type=text v-model="username"></td></tr>
