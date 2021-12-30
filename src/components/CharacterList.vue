@@ -1,34 +1,39 @@
 <template>
-  <div align=left>
+  <div class=CharacterList v-if="show_list=='character_list'">
   <ol>
-    <li v-for="character in characters" v-bind:key="character">
+    <li v-for="character in characters.results" v-bind:key="character.id" :id="character.id" @click="NameClicked">
       {{ character.name }} the {{ character.character_role }}
     </li>
   </ol>
+  <h3 @click="Next" class=Navigation align=center v-if="characters.next">Next</h3>
+  <h3 @click="Previous" class=Navigation align=center v-if="characters.previous">Previous</h3>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
     return {
-      characters: [],
       errors: []
     }
   },
 
-  // Fetches posts when the component is created.
-  created() {
-    axios.get(`http://127.0.0.1:8000/whitebox/character_list`)
-    .then(response => {
-      // JSON responses are automatically parsed.
-      this.characters = response.data
-    })
-    .catch(e => {
-      this.errors.push(e)
-    })
+  props: {
+    show_list : String,
+    characters : Object
+  },
+
+  methods: {
+    NameClicked(event) {
+        this.$emit('CharacterListClicked', event.target.id);
+    },
+    Next() {
+        this.$emit('CharacterListPageNext', this.characters.next);
+    },
+    Previous() {
+        this.$emit('CharacterListPagePrevious', this.characters.previous);
+    }
   }
 }
 </script>
