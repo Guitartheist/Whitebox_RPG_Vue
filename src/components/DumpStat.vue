@@ -1,10 +1,9 @@
 <template>
       <tr><td>{{ stat_name }}</td>
-      <td class=CharacterStatistic><b>{{ original_value }}</b></td>
+      <td class=CharacterStatistic><b>{{ new_value }}</b></td>
       <td class=DumpValue>Dump {{ dump_value }}</td>
-      <td class=DumpValue :id="stat_name" @click="Plus"><b>+</b></td>
-      <td class=DumpValue :id="stat_name" @click="Minus"><b>-</b></td>
-      <td>Final Value {{ new_value }}</td>
+      <td :class="plus_class" :id="stat_name" @click="Plus"><b>+</b></td>
+      <td :class="minus_class" :id="stat_name" @click="Minus"><b>-</b></td>
       </tr>
 </template>
 
@@ -13,6 +12,8 @@
 export default {
   data() {
     return {
+        plus_class: 'DumpControlDisabled',
+        minus_class: 'DumpControlDisabled',
       errors: []
     }
   },
@@ -21,18 +22,41 @@ export default {
     stat_name : String,
     original_value : Number,
     dump_value: Number,
-    new_value: Number
-  },
-
-  created() {
+    new_value: Number,
+    plus_enabled: Boolean,
+    minus_enabled: Boolean
   },
 
   methods: {
         Plus() {
-            this.$emit('Plus', this.stat_name);
+            if (this.plus_enabled) {
+                this.$emit('Plus', this.stat_name);
+            }
         },
         Minus() {
-            this.$emit('Minus', this.stat_name);
+            if (this.minus_enabled) {
+                this.$emit('Minus', this.stat_name);
+            }
+        }
+  },
+
+  watch: {
+        plus_enabled(val) {
+            if (val==false) {
+                this.plus_class = 'DumpControlDisabled'
+            }
+            else {
+                this.plus_class = 'DumpControlEnabled'
+            }
+        },
+
+        minus_enabled(val) {
+            if (val==false) {
+                this.minus_class = 'DumpControlDisabled'
+            }
+            else {
+                this.minus_class = 'DumpControlEnabled'
+            }
         }
   }
 }

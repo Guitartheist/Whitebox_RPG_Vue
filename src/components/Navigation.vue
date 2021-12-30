@@ -26,11 +26,6 @@ export default {
     username: String
   },
 
-  // Fetches character list when the component is created.
-  created() {
-    this.UserChange();
-  },
-
   methods: {
     NavClicked(event) {
         this.$emit('NavClicked', event);

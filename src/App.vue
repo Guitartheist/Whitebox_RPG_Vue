@@ -74,6 +74,16 @@ export default {
     this.UpdateList();
   },
   methods: {
+        UserChange() {
+            HTTP.get('get_username')
+            .then(response => {
+              // JSON responses are automatically parsed.
+              this.username = response.data.username;
+            })
+            .catch(e => {
+              this.errors.push(e)
+            })
+        },
         async CharacterChange(id) {
                 this.fetch_id = id;
                 await HTTP.get(`characters/` + this.fetch_id + '/')
@@ -98,7 +108,6 @@ export default {
                     this.character_list_url = 'CharacterList';
                     this.UpdateList();
                     this.show_left = 'character_list';
-                    this.show_right = 'detail';
                     break;
                 case 'create_character':
                     this.show_right = 'create';
@@ -108,7 +117,6 @@ export default {
                     this.character_list_url = 'MyCharacterList';
                     this.show_left = 'character_list';
                     this.UpdateList();
-                    this.show_right = 'detail';
                     break;
                 case 'register':
                     this.show_right = 'register';
@@ -149,24 +157,15 @@ export default {
               this.errors.push(e)
             })
         },
-        CreateClicked(event) {
-            this.character_detail = event;
+        CreateClicked(character) {
+            this.character_detail = character;
+            this.fetch_id = character.id;
             this.show_left = 'character_list';
             this.show_right = 'detail';
             this.UpdateList();
         },
         FinalizeClicked() {
             this.show_right = 'finalize';
-        },
-        UserChange() {
-            HTTP.get('get_username')
-            .then(response => {
-              // JSON responses are automatically parsed.
-              this.username = response.data.username;
-            })
-            .catch(e => {
-              this.errors.push(e)
-            })
         },
         UpdateList() {
             HTTP.get(this.character_list_url + "?page=" + this.list_page)
@@ -188,6 +187,7 @@ export default {
             .catch(e => {
               this.errors.push(e)
             })
+            this.fetch_id = '';
             this.UpdateList();
             this.show_right = 'create';
         },

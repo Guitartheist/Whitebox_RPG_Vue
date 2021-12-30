@@ -21,11 +21,7 @@ export default {
 
   props: {
     show_list : String,
-    characters : Array
-  },
-
-  // Fetches character list when the component is created.
-  created() {
+    characters : Object
   },
 
   methods: {
