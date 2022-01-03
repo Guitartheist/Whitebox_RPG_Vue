@@ -13,10 +13,16 @@
       <tr><td>Silver</td><td class=CharacterStatistic><b>{{ selected_character.silver }}</b></td></tr>
       <tr><td>Copper</td><td class=CharacterStatistic><b>{{ selected_character.copper }}</b></td></tr>
       </table>
-      <h2 v-if="selected_character && selected_character.username==username"
+      <h2 v-if="!delete_prep && selected_character && (selected_character.username==username || selected_character.username=='')"
             @click="DeleteClicked">
        Delete </h2>
-      <h2 v-if="selected_character && selected_character.finalized==false && selected_character.username==username"
+       <h2 v-if="delete_prep"
+            @click="DeleteCancel">
+       Cancel Delete </h2>
+      <h2 v-if="delete_prep"
+            @click="DeleteConfirmed">
+       Confirm Delete </h2>
+      <h2 v-if="selected_character && selected_character.finalized==false && (selected_character.username==username || selected_character.username=='')"
             @click="FinalizeClicked">
         Finalize </h2>
   </div>
@@ -27,7 +33,8 @@
 export default {
   data() {
     return {
-      errors: []
+        delete_prep: false,
+        errors: []
     }
   },
 
@@ -41,8 +48,15 @@ export default {
   },
 
   methods: {
-    DeleteClicked(event) {
+    DeleteClicked() {
+        this.delete_prep = true;
+    },
+    DeleteConfirmed(event) {
+        this.delete_prep = false;
         this.$emit('DeleteClicked', event);
+    },
+    DeleteCancel() {
+        this.delete_prep = false;
     },
     FinalizeClicked(event) {
         this.$emit('FinalizeClicked', event);

@@ -22,8 +22,14 @@
             v-bind:plus_enabled="cha_pc" v-bind:minus_enabled="cha_mc"/>
       </table>
       <h2 v-if="selected_character && selected_character.finalized==false && selected_character.username==username"
-            @click="Finalize">
+            @click="FinalizeClicked">
         Finalize {{ selected_character.name }} as a {{ character_role }} </h2>
+      <h2 v-if="final_prep"
+            @click="FinalizeCancel">
+       Cancel Finalize </h2>
+      <h2 v-if="final_prep"
+            @click="FinalizeConfirmed">
+       Confirm Finalize </h2>
   </div>
 </template>
 
@@ -37,6 +43,7 @@ export default {
   },
   data() {
     return {
+        final_prep: false,
         s: 'Strength',
         d: 'Dexterity',
         co: 'Constitution',
@@ -193,6 +200,16 @@ export default {
         this.dump_ch = 0;
         await this.DisableAllButtons();
         await this.UpdateFinalizeCharacterState();
+    },
+    FinalizeClicked() {
+        this.final_prep = true;
+    },
+    FinalizeCancel() {
+        this.final_prep = false;
+    },
+    FinalizeConfirmed() {
+        this.final_prep = false;
+        this.Finalize();
     },
     async Finalize() {
         await HTTP.put('characters/'+this.selected_character.id+'/',
