@@ -2,7 +2,7 @@
   <div v-if="show_create=='create'" class=CharacterCreate border=1>
       <h1>Generate a new character</h1>
       <label>Name: </label>
-      <input type=text v-model="name">
+      <input type=text v-model="name" @keyup.enter="Generate">
       <input type=submit value="Generate" @click="Generate">
   </div>
 </template>
