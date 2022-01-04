@@ -61,12 +61,6 @@ export default {
     FinalizeClicked(event) {
         this.$emit('FinalizeClicked', event);
     }
-  },
-  
-  watch: {
-	selected_character() {
-		this.delete_prep = false;
-	}
   }
 }
 </script>

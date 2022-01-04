@@ -198,7 +198,6 @@ export default {
         this.dump_i = 0;
         this.dump_w = 0;
         this.dump_ch = 0;
-		this.final_prep = false;
         await this.DisableAllButtons();
         await this.UpdateFinalizeCharacterState();
     },
