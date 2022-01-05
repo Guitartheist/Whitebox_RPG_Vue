@@ -22,6 +22,7 @@
             v-bind:username="username"
             @DeleteClicked="DeleteClicked"
             @FinalizeClicked="FinalizeClicked"
+			@BuyMeleeWeapon="BuyMeleeWeapon"
         />
         <FinalizeCharacter
             v-bind:selected_character="character_detail"
@@ -197,7 +198,19 @@ export default {
         UserLogon() {
             this.show_right = 'detail';
             this.UserChange();
-        }
+        },
+		async BuyMeleeWeapon(melee_weapon_id) {
+			await HTTP.post('MeleeWeaponTransaction',
+			{
+				character_id: this.fetch_id,
+				melee_weapon_id: melee_weapon_id
+			}).then(response => {
+				this.character_detail = response.data;
+			})
+        .catch(e => {
+          this.errors.push(e)
+        })
+		}
   }
 }
 </script>
