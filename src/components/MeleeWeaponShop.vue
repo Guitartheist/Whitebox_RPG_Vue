@@ -1,6 +1,6 @@
 <template>
   <div v-if="show_shop == 'melee_weapons'">
-  <h1>Weapon List</h1>
+  <h1>Melee Weapons</h1>
   <table>
   <tr>
 	<td>Name</td>
@@ -28,6 +28,7 @@ import { HTTP } from './http-common';
 export default {
   data() {
     return {
+	weapon: '',
 	page: 1,
 	weapons: [],
     errors: []
@@ -58,7 +59,13 @@ export default {
         this.page -= 1;
     },
 	Buy(event) {
-		this.$emit('BuyMeleeWeapon', event.target.id);
+		this.weapon = this.weapons.results.find(function(w) {
+			if(w.id == event.target.id)
+				return true;
+			});
+		if (confirm("Buy " + this.weapon.name + " for " + this.weapon.cost_gp + " gold?")){
+			this.$emit('BuyMeleeWeapon', event.target.id);
+		}
 	}
   },
   
