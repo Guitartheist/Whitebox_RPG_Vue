@@ -14,6 +14,22 @@
       <tr><td>Copper</td><td class=CharacterStatistic><b>{{ selected_character.copper }}</b></td></tr>
       </table>
 	
+	<h3 v-if="selected_character.melee_weapons.length > 0">Melee Weapons</h3>
+	<table v-if="selected_character.melee_weapons.length > 0">
+		<tr>
+			<td>Name</td>
+			<td>Damage</td>
+			<td>Weight</td>
+			<td>Cost (Gold)</td>
+		</tr>
+		<tr v-for="weapon in selected_character.melee_weapons" v-bind:key="weapon.id" :id="weapon.id" >
+			<td class=ShoppingValue> {{ weapon.name }} </td> 
+			<td class=ShoppingValue> {{ weapon.damage }} </td>
+			<td class=ShoppingValue> {{ weapon.weight }} </td>
+			<td class=ShoppingValue> {{ weapon.cost_gp }} </td>
+		</tr>
+	</table>
+	
 	<MeleeWeaponShop v-if="selected_character && selected_character.finalized==true && selected_character.username==username" 
 	v-bind:show_shop="show_shop"
 	v-bind:available_gold="selected_character.gold"

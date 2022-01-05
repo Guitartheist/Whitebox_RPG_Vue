@@ -1,6 +1,6 @@
 <template>
   <div v-if="show_shop == 'melee_weapons'">
-  <h1>Melee Weapons</h1>
+  <h1>Melee Weapons Shop</h1>
   <table>
   <tr>
 	<td>Name</td>
