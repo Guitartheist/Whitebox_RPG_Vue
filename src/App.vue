@@ -23,6 +23,7 @@
             @DeleteClicked="DeleteClicked"
             @FinalizeClicked="FinalizeClicked"
 			@BuyMeleeWeapon="BuyMeleeWeapon"
+			@BuyRangedWeapon="BuyRangedWeapon"
         />
         <FinalizeCharacter
             v-bind:selected_character="character_detail"
@@ -204,6 +205,18 @@ export default {
 			{
 				character_id: this.fetch_id,
 				melee_weapon_id: melee_weapon_id
+			}).then(response => {
+				this.character_detail = response.data;
+			})
+        .catch(e => {
+          this.errors.push(e)
+        })
+		},
+		async BuyRangedWeapon(ranged_weapon_id) {
+			await HTTP.post('RangedWeaponTransaction',
+			{
+				character_id: this.fetch_id,
+				ranged_weapon_id: ranged_weapon_id
 			}).then(response => {
 				this.character_detail = response.data;
 			})
