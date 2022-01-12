@@ -30,6 +30,26 @@
 		</tr>
 	</table>
 	
+	<h3 v-if="selected_character.ranged_weapons.length > 0">Ranged Weapons</h3>
+	<table v-if="selected_character.ranged_weapons.length > 0">
+		<tr>
+			<td>Name</td>
+			<td>Damage</td>
+			<td>ROF</td>
+			<td>Range</td>
+			<td>Weight</td>
+			<td>Cost (Gold)</td>
+		</tr>
+		<tr v-for="weapon in selected_character.ranged_weapons" v-bind:key="weapon.id" :id="weapon.id" >
+			<td class=ShoppingValue> {{ weapon.name }} </td> 
+			<td class=ShoppingValue> {{ weapon.damage }} </td>
+			<td class=ShoppingValue> {{ weapon.rof }} </td>
+			<td class=ShoppingValue>  {{ weapon.w_range}} </td>
+			<td class=ShoppingValue> {{ weapon.weight }} </td>
+			<td class=ShoppingValue> {{ weapon.cost_gp }} </td>
+		</tr>
+	</table>
+	
 	<MeleeWeaponShop v-if="selected_character && selected_character.finalized==true && selected_character.username==username" 
 	v-bind:show_shop="show_shop"
 	v-bind:available_gold="selected_character.gold"
@@ -41,6 +61,18 @@
 	
 	<h2 v-if="show_shop=='melee_weapons'" @click="CloseMelee">
 	Close Melee Weapons</h2>
+	
+	<RangedWeaponShop v-if="selected_character && selected_character.finalized==true && selected_character.username==username" 
+	v-bind:show_shop="show_shop"
+	v-bind:available_gold="selected_character.gold"
+	@BuyRangedWeapon="BuyRangedWeapon"
+	/>
+	
+	<h2 v-if="show_shop!='ranged_weapons' && selected_character && selected_character.finalized==true && selected_character.username==username" @click="BuyRanged">
+	Buy Ranged Weapons</h2>
+	
+	<h2 v-if="show_shop=='ranged_weapons'" @click="CloseRanged">
+	Close Ranged Weapons</h2>
 	
       <h2 v-if="!delete_prep && selected_character && (selected_character.username==username || selected_character.username=='')"
             @click="DeleteClicked">
@@ -59,10 +91,12 @@
 
 <script>
 import MeleeWeaponShop from './MeleeWeaponShop.vue';
+import RangedWeaponShop from './RangedWeaponShop.vue';
 
 export default {
 	components: {
-   MeleeWeaponShop
+   MeleeWeaponShop,
+   RangedWeaponShop
   },
 	
   data() {
@@ -106,6 +140,15 @@ export default {
 	},
 	BuyMeleeWeapon(melee_weapon_id) {
 		this.$emit('BuyMeleeWeapon', melee_weapon_id);
+	},
+	BuyRanged() {
+		this.show_shop = 'ranged_weapons';
+	},
+	CloseRanged() {
+		this.show_shop = '';
+	},
+	BuyRangedWeapon(ranged_weapon_id) {
+		this.$emit('BuyRangedWeapon', ranged_weapon_id);
 	}
   },
   
